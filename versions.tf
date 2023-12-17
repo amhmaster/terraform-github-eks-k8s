@@ -6,7 +6,7 @@ terraform {
   cloud {
     organization = "TF-Git-EKS-K8s"
     workspaces {
-      name = "learn-terraform-eks"
+      name = "tf-git-eks-k8s-1"
     }
   }
 
