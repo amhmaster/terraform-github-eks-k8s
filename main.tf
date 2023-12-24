@@ -122,9 +122,48 @@ provider "kubectl" {
 }
 
 resource "kubectl_manifest" "deployment" {
-  yaml_body   = file("docker101-miniproject.yaml")
+  yaml_body = <<YAML
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app-deployment
+spec:
+  replicas: 1  # Set the desired number of replicas
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+      - name: my-app
+        image: aungmyohein/docker101-miniproject  # Use the image built earlier
+        ports:
+        - name: http
+          containerPort: 3000
+          protocol: TCP
+      
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-app-service
+spec:
+  selector:
+    app: my-app
+  ports:
+    - name: http
+      port: 5000
+      targetPort: 3000
+  type: LoadBalancer
+
+YAML
+  
+
   depends_on  = [module.eks]
-  provisioner "local-exec" {
-    command = "kubectl rollout restart deployment todoapp -n todoapp-ns"  # Replace <namespace> with your actual namespace
-  }
+  #provisioner "local-exec" {
+    #command = "kubectl rollout restart deployment todoapp -n todoapp-ns"  # Replace <namespace> with your actual namespace
+  #}
 }
